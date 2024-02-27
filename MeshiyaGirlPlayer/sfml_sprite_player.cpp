@@ -176,8 +176,6 @@ void CSfmlSpritePlayer::SetupSprite()
 	for (size_t i = 0; i < nMaxLayer; ++i)
 	{
 		sf::Texture texture;
-		/*全体像と顔のみ有効。輪郭が際立つのでモザイク画像には向かない*/
-		if (i == 0 || i == 1)texture.setSmooth(true);
 		sf::Sprite sprite;
 		m_textures.emplace_back(texture);
 		m_sprites.emplace_back(sprite);
@@ -187,7 +185,6 @@ void CSfmlSpritePlayer::SetupSprite()
 	bool bRet = m_textures.at(iInitialLayer).loadFromFile(m_imageData.at(0).strImagePath);
 	if (bRet)
 	{
-		/*最下層の寸法を標準とする。*/
 		m_BaseWindowSize = m_textures.at(iInitialLayer).getSize();
 		m_sprites.at(iInitialLayer).setTexture(m_textures.at(iInitialLayer));
 		for (size_t i = 1; i < m_imageData.size(); ++i)
@@ -205,10 +202,14 @@ void CSfmlSpritePlayer::SetupSprite()
 	}
 
 }
-/*平滑補正有効・無効*/
+/*平滑補正切り替え*/
 void CSfmlSpritePlayer::SwitchSmoothMode()
 {
-	for (size_t i = 2; i < m_textures.size(); ++i)
+	/*
+	* 境界線が際立つので透過情報によっては相性が悪い。
+	* 身体・顔表情までなら問題ないものが多いが、駄目なものも有り。
+	*/
+	for (size_t i = 0; i < m_textures.size(); ++i)
 	{
 		bool bToBeSmoothed = m_textures.at(i).isSmooth() ^ true;
 		m_textures.at(i).setSmooth(bToBeSmoothed);
