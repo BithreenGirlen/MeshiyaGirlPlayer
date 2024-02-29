@@ -36,6 +36,10 @@ bool CSfmlSpritePlayer::SetFont(const std::string& strFilePath, bool bBold, bool
     m_msgText.setFont(m_font);
     m_msgText.setFillColor(sf::Color::Black);
     m_msgText.setStyle((bBold ? sf::Text::Style::Bold : 0) | (bItalic ? sf::Text::Style::Italic : 0));
+
+	m_imgText.setFont(m_font);
+	m_imgText.setFillColor(sf::Color::Black);
+	m_imgText.setStyle((bBold ? sf::Text::Style::Bold : 0) | (bItalic ? sf::Text::Style::Italic : 0));
     return true;
 }
 
@@ -50,9 +54,11 @@ int CSfmlSpritePlayer::Display(const std::wstring& wstrWindowName)
 	SetupSprite();
 	m_sound.setVolume(m_audioVolume);
 	UpdateMessageText();
+	UpdateSprite();
 
     m_window = std::make_unique<sf::RenderWindow>(sf::VideoMode(m_BaseWindowSize.x, m_BaseWindowSize.y), wstrWindowName, sf::Style::None);
     m_window->setPosition(sf::Vector2i(0, 0));
+	AdjustTextPosition();
     
 	sf::Vector2i iMouseStartPos;
 	bool bOnWindowMove = false;
@@ -118,7 +124,7 @@ int CSfmlSpritePlayer::Display(const std::wstring& wstrWindowName)
 				switch (event.key.code)
 				{
 				case sf::Keyboard::Key::C:
-					m_msgText.setFillColor(m_msgText.getFillColor() == sf::Color::Black ? sf::Color::White : sf::Color::Black);
+					SwitchTextColor();
 					break;
 				case sf::Keyboard::Key::S:
 					SwitchSmoothMode();
@@ -148,7 +154,11 @@ int CSfmlSpritePlayer::Display(const std::wstring& wstrWindowName)
 		{
 			m_window->draw(m_sprites.at(i), i == 0 ? sf::RenderStates(sf::BlendNone) : sf::RenderStates(sf::BlendAlpha));
 		}
-		if (!m_bTextHidden)m_window->draw(m_msgText);
+		if (!m_bTextHidden)
+		{
+			m_window->draw(m_msgText);
+			m_window->draw(m_imgText);
+		}
 
 		m_window->display();
 
@@ -202,6 +212,12 @@ void CSfmlSpritePlayer::SetupSprite()
 	}
 
 }
+/*文字色切り替え*/
+void CSfmlSpritePlayer::SwitchTextColor()
+{
+	m_msgText.setFillColor(m_msgText.getFillColor() == sf::Color::Black ? sf::Color::White : sf::Color::Black);
+	m_imgText.setFillColor(m_imgText.getFillColor() == sf::Color::Black ? sf::Color::White : sf::Color::Black);
+}
 /*平滑補正切り替え*/
 void CSfmlSpritePlayer::SwitchSmoothMode()
 {
@@ -239,6 +255,7 @@ void CSfmlSpritePlayer::ResizeWindow()
 		m_window->setSize(sf::Vector2u(static_cast<unsigned int>(m_BaseWindowSize.x * m_fSpriteScale), static_cast<unsigned int>(m_BaseWindowSize.y * m_fSpriteScale)));
 	}
 	AdjustOffset();
+	AdjustTextPosition();
 }
 /*視点移動*/
 void CSfmlSpritePlayer::AddOffset(sf::Vector2i iOffset)
@@ -287,6 +304,22 @@ void CSfmlSpritePlayer::ResetScale()
 		m_window->setPosition(sf::Vector2i(0, 0));
 	}
 }
+/*文章表示位置調整*/
+void CSfmlSpritePlayer::AdjustTextPosition()
+{
+	int iSpriteHeight = static_cast<int>(m_BaseWindowSize.y * m_fSpriteScale);
+	int iClientHeight = sf::VideoMode::getDesktopMode().height;
+
+	if (iSpriteHeight < iClientHeight)
+	{
+		m_imgText.setPosition(sf::Vector2f{ 0, m_BaseWindowSize.y - m_imgText.getGlobalBounds().height });
+	}
+	else
+	{
+		float fScale = static_cast<float>(iClientHeight) / iSpriteHeight;
+		m_imgText.setPosition(sf::Vector2f{ 0, m_BaseWindowSize.y * fScale - m_imgText.getGlobalBounds().height });
+	}
+}
 /*経過時間測定*/
 void CSfmlSpritePlayer::CheckTimer()
 {
@@ -328,6 +361,9 @@ void CSfmlSpritePlayer::UpdateSprite()
 	{
 		m_sprites.at(iLayer).setTexture(m_textures.at(iLayer));
 	}
+
+	std::wstring wstr = std::to_wstring(m_nImageIndex + 1) + L"/" + std::to_wstring(m_imageData.size());
+	m_imgText.setString(wstr);
 }
 /*文章移行*/
 void CSfmlSpritePlayer::ShiftMessageText(bool bForward)
