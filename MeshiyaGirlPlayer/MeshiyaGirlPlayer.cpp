@@ -25,7 +25,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         if (bRet)
         {
             CSfmlSpritePlayer SfmlPlayer;
-            bRet = SfmlPlayer.SetFont("font\\yumindb.ttf", true, true);
+            bRet = SfmlPlayer.SetFont("C:\\Windows\\Fonts\\yumindb.ttf", true, true);
             if (bRet)
             {
                 SfmlPlayer.SetResources(textData, imageData);
