@@ -84,7 +84,7 @@ namespace meshiya
 							for (;;)
 							{
 								size_t nPos = wstr.find(L"▼");
-								if (nPos == std::string::npos)break;
+								if (nPos == std::wstring::npos)break;
 								wstr.replace(nPos, 1, L"♡");
 							}
 							tokenDatum.messageData.wstrText = wstr;
@@ -201,8 +201,18 @@ bool meshiya::LoadScenario(const std::wstring& wstrFilePath, std::vector<adv::Te
 						if (iter != fileIds.end())
 						{
 							std::string str = StillUrlToFilePath(iter->second);
+							int iLayer = 0;
+							/*stillData.iLayerの値で制御するのは無理っぽい。*/
+							if (iter->second.rfind("_up_") != std::string::npos)
+							{
+								iLayer = 2;
+							}
+							else if (iter->second.rfind("_face_") != std::string::npos)
+							{
+								iLayer = 1;
+							}
 							imageDatum.strImagePath = str;
-							imageDatum.iLayer = tokenDatum.stillData.iLayer;
+							imageDatum.iLayer = iLayer;
 							imageData.emplace_back(imageDatum);
 						}
 					}

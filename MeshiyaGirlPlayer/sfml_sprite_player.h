@@ -24,6 +24,7 @@ private:
 
 	sf::Font m_font;
 	sf::Text m_msgText;
+	sf::Text m_imgText;
 
 	std::vector<sf::Texture> m_textures;
 	std::vector<sf::Sprite> m_sprites;
@@ -43,6 +44,8 @@ private:
 	sf::Vector2i m_iOffset = sf::Vector2i{};
 
 	void SetupSprite();
+
+	void SwitchTextColor();
 	void SwitchSmoothMode();
 
 	void RescaleSprite(bool bUpscale);
@@ -51,6 +54,7 @@ private:
 	void AdjustOffset();
 	void UpdateSpriteOrigin();
 	void ResetScale();
+	void AdjustTextPosition();
 
 	void CheckTimer();
 	void ShiftSprite(bool bForward);
