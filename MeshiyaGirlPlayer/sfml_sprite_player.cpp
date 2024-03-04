@@ -33,13 +33,19 @@ bool CSfmlSpritePlayer::SetFont(const std::string& strFilePath, bool bBold, bool
     bool bRet = m_font.loadFromFile(strFilePath);
     if (!bRet)return false;
 
+	constexpr float fOutLineThickness = 1.2f;
+
     m_msgText.setFont(m_font);
     m_msgText.setFillColor(sf::Color::Black);
     m_msgText.setStyle((bBold ? sf::Text::Style::Bold : 0) | (bItalic ? sf::Text::Style::Italic : 0));
+	m_msgText.setOutlineThickness(fOutLineThickness);
+	m_msgText.setOutlineColor(sf::Color::White);
 
 	m_imgText.setFont(m_font);
 	m_imgText.setFillColor(sf::Color::Black);
 	m_imgText.setStyle((bBold ? sf::Text::Style::Bold : 0) | (bItalic ? sf::Text::Style::Italic : 0));
+	m_imgText.setOutlineThickness(fOutLineThickness);
+	m_imgText.setOutlineColor(sf::Color::White);
     return true;
 }
 
@@ -217,6 +223,9 @@ void CSfmlSpritePlayer::SwitchTextColor()
 {
 	m_msgText.setFillColor(m_msgText.getFillColor() == sf::Color::Black ? sf::Color::White : sf::Color::Black);
 	m_imgText.setFillColor(m_imgText.getFillColor() == sf::Color::Black ? sf::Color::White : sf::Color::Black);
+
+	m_msgText.setOutlineColor(m_msgText.getFillColor() == sf::Color::Black ? sf::Color::White : sf::Color::Black);
+	m_imgText.setOutlineColor(m_imgText.getFillColor() == sf::Color::Black ? sf::Color::White : sf::Color::Black);
 }
 /*ïΩääï‚ê≥êÿÇËë÷Ç¶*/
 void CSfmlSpritePlayer::SwitchSmoothMode()
